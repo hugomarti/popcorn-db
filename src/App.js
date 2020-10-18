@@ -1,24 +1,35 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { Switch, Route } from "react-router-dom";
+import { FooterApp } from "./components/Footer";
+import { fetchSearchMovie } from "./services/index";
+
+import { HomePage } from "./components/Home";
+import { MovieDetail } from "./components/MovieDetail";
+import { Navbar } from "./components/Navbar";
 
 function App() {
+  const [searchResult, setSearchResult] = useState([]);
+
+  const handleSearch = async (movieTitle) => {
+    setSearchResult(await fetchSearchMovie(movieTitle));
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Navbar onSearch={handleSearch} />
+      <Switch>
+        <Route
+          path="/"
+          render={() => (
+            <HomePage
+              searchResult={searchResult}
+              onReset={() => setSearchResult([])}
+            />
+          )}
+          exact
+        />
+        <Route path="/movie/:id" component={MovieDetail} />
+      </Switch>
+      <FooterApp />
     </div>
   );
 }
